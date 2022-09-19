@@ -10,22 +10,21 @@ CREATE TABLE Random (
 
 BULK INSERT Random FROM 'C:\data\ManyLines.txt'
 WITH
-(
-FIELDTERMINATOR = ',',
+(FIELDTERMINATOR = ',',
 ROWTERMINATOR = '\n')
 GO
 
 SELECT * FROM Random;
 
---Søg efter et bestemt tilfældigt tal, f.eks. 4711
+--SÃ¸g efter et bestemt tilfÃ¦ldigt tal, f.eks. 4711
 SELECT *
 FROM Random
 WHERE RandomNumber = 4711;
 --Duration (No index)	      : 35ms	Reads (No index)	: 2210	CPU (No index)	: 31
 --Duration (Index)            :  1ms	Reads (Index)		:   25	CPU (Index)		:  0
 
---Lav en oversigt over alle de tilfældige tal og hvor mange gange de hver især forekommer, sorteret 
---efter de tilfældige tal (dette kan også benyttes som et VIEW til løsning af de næste forespørgsler)
+--Lav en oversigt over alle de tilfÃ¦ldige tal og hvor mange gange de hver isÃ¦r forekommer, sorteret 
+--efter de tilfÃ¦ldige tal (dette kan ogsÃ¥ benyttes som et VIEW til lÃ¸sning af de nÃ¦ste forespÃ¸rgsler)
 CREATE VIEW NumberOccurrences 
 AS
 SELECT COUNT(*) AS 'Occurrences', RandomNumber
@@ -40,7 +39,7 @@ ORDER BY 'Occurrences' DESC;
 --Duration (Index)            : 143ms	Reads (Index)		: 1787	CPU (Index)		:  94
 --Unexpected duration?
 
---Find hvor mange gange det eller de sjældneste tilfældige tal forekommer
+--Find hvor mange gange det eller de sjÃ¦ldneste tilfÃ¦ldige tal forekommer
 DECLARE @MinOccurrences INTEGER;
 SELECT @MinOccurrences = MIN([Occurrences]) FROM NumberOccurrences;
 
@@ -52,14 +51,14 @@ HAVING 'Occurrences' = MIN('Occurrences');
 --Duration (Index)            : 129ms	Reads (Index)		: 3574	CPU (Index)		: 110
 --Result: 340 (61 occurrences)
 
---Find sjældneste tal (alternativ)
+--Find sjÃ¦ldneste tal (alternativ)
 SELECT TOP 1 RandomNumber, COUNT(*)
 FROM Random
 GROUP BY RandomNumber
 ORDER BY COUNT(*) ASC;
 --Duration (Index)            :  64ms	Reads (Index)		: 1771	CPU (Index)		:  63
 
---Find hvor mange gange det eller de hyppigste tilfældige tal forekommer
+--Find hvor mange gange det eller de hyppigste tilfÃ¦ldige tal forekommer
 DECLARE @MaxOccurrences INTEGER;
 SELECT @MaxOccurrences = MAX([Occurrences]) FROM NumberOccurrences;
 
@@ -77,10 +76,10 @@ GROUP BY RandomNumber
 ORDER BY COUNT(*) DESC;
 --Duration (Index)            :  71ms	Reads (Index)		: 1848	CPU (Index)		:  62
 
---Tilføj nu et INDEX til tabellen Random. Det er feltet RandomNumber, der laves index på.
+--TilfÃ¸j nu et INDEX til tabellen Random. Det er feltet RandomNumber, der laves index pÃ¥.
 CREATE INDEX index_random_numbers
 ON Random(RandomNumber);
 
---Afprøv nu de samme forespørgsler som tidligere og dokumenter forskellene.
+--AfprÃ¸v nu de samme forespÃ¸rgsler som tidligere og dokumenter forskellene.
 
---Forskelle: Færre reads, mere CPU, længere tid (undtagen)
+--Forskelle: FÃ¦rre reads, mere CPU, lÃ¦ngere tid (undtagen)
